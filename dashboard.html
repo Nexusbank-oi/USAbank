@@ -3,108 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vantage Peak - Dashboard</title>
+    <title>Vantage Peak - Executive Dashboard</title>
+    <!-- Google Translate Script -->
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//://google.com"></script>
+    
     <style>
-        :root { --primary: #0f172a; --accent: #fbbf24; --bg: #f8fafc; }
-        body { font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 80px; background: var(--bg); color: #1e293b; }
+        :root { --primary: #000000; --accent: #d4af37; --bg: #0f1113; --card-bg: #1a1c1e; }
+        body { font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 80px; background: var(--bg); color: #e2e8f0; }
         
-        /* Top Header */
-        .header { background: var(--primary); color: white; padding: 25px 20px 60px; text-align: center; border-radius: 0 0 30px 30px; }
-        .profile-img { width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--accent); object-fit: cover; margin-bottom: 10px; }
-        .bank-name { color: var(--accent); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; }
+        #google_translate_element { padding: 10px; text-align: center; background: #111; border-bottom: 1px solid #333; }
 
-        /* Main Scrollable Content */
+        .header { background: var(--primary); color: white; padding: 25px 20px 60px; text-align: center; border-radius: 0 0 30px 30px; border-bottom: 1px solid #333; }
+        .profile-img { width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; margin-bottom: 10px; }
+        .bank-name { color: var(--accent); font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; margin-top: 5px; font-weight: bold; }
+
         .content { padding: 0 20px; margin-top: -40px; }
 
-        /* Modern Debit Card */
+        /* Card Style */
         .debit-card { 
-            background: linear-gradient(135deg, #1e293b 0%, #475569 100%); 
-            border-radius: 20px; padding: 25px; color: white; position: relative;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2); margin-bottom: 30px;
+            background: linear-gradient(135deg, #000000 0%, #2c2c2c 100%); 
+            border: 1px solid #444; border-radius: 20px; padding: 25px; color: white; position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6); margin-bottom: 30px; cursor: pointer;
         }
-        .card-type { float: right; font-size: 0.7rem; font-weight: bold; opacity: 0.8; }
-        .chip { width: 45px; height: 35px; background: #cbd5e1; border-radius: 6px; margin-bottom: 30px; }
-        .card-num { font-size: 1.3rem; letter-spacing: 3px; font-family: 'Courier New', monospace; margin-bottom: 20px; }
-        .label { font-size: 0.6rem; text-transform: uppercase; color: #94a3b8; }
-        .val { font-size: 0.85rem; font-weight: 500; margin-top: 2px; }
-
-        /* Balance Section */
-        .balance-card { background: white; padding: 20px; border-radius: 16px; margin-bottom: 25px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .card-type { float: right; font-size: 0.7rem; font-weight: bold; color: var(--accent); }
+        .chip { width: 45px; height: 35px; background: linear-gradient(135deg, #d4af37, #f9e29c); border-radius: 6px; margin-bottom: 30px; }
+        .card-num { font-size: 1.3rem; letter-spacing: 3px; font-family: 'Courier New', monospace; margin-bottom: 15px; }
+        .cvv-display { font-size: 0.8rem; color: var(--accent); margin-bottom: 10px; display: none; }
+        .label { font-size: 0.6rem; text-transform: uppercase; color: #888; }
+        .val { font-size: 0.85rem; font-weight: 500; }
 
         /* Transactions */
-        .card-white { background: white; padding: 15px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .trans-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f1f5f9; }
-        .trans-info b { display: block; font-size: 0.9rem; }
-        .trans-info span { font-size: 0.75rem; color: #64748b; }
+        .card-white { background: var(--card-bg); padding: 15px; border-radius: 16px; border: 1px solid #333; }
+        .trans-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #333; cursor: pointer; transition: 0.3s; }
+        .trans-row:hover { background: #25282c; }
+        .trans-info b { display: block; font-size: 0.9rem; color: #fff; }
+        .trans-info span { font-size: 0.75rem; color: #888; }
         .amount-pos { color: #10b981; font-weight: bold; }
-        .amount-neg { color: #ef4444; font-weight: bold; }
+        .amount-neg { color: #ff4d4d; font-weight: bold; }
 
-        /* FIXED BOTTOM NAVIGATION */
-        .bottom-nav { 
-            position: fixed; bottom: 0; left: 0; right: 0; 
-            background: white; display: flex; justify-content: space-around; 
-            padding: 15px 0; border-top: 1px solid #e2e8f0; z-index: 100;
-        }
-        .nav-item { text-align: center; color: #64748b; text-decoration: none; font-size: 0.75rem; cursor: pointer; border: none; background: none; }
-        .nav-item.active { color: var(--primary); font-weight: bold; }
-        .nav-icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
-
-        /* Overlay */
-        .overlay { display: none; position: fixed; inset: 0; background: white; z-index: 999; justify-content: center; align-items: center; flex-direction: column; font-weight: bold; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        /* Overlays */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 999; justify-content: center; align-items: center; flex-direction: column; }
+        .spinner { border: 4px solid #333; border-top: 4px solid var(--accent); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* PIN & Receipt UI */
+        .modal-container { text-align: center; background: #1a1c1e; padding: 30px; border-radius: 20px; border: 1px solid var(--accent); width: 80%; max-width: 350px; }
+        .pin-input { background: none; border: none; border-bottom: 2px solid var(--accent); color: white; font-size: 2rem; text-align: center; width: 120px; outline: none; letter-spacing: 5px; margin-bottom: 20px; }
+        .btn-confirm { background: var(--accent); border: none; padding: 10px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; color: black; }
+
+        /* Receipt Specific Styling */
+        .receipt-body { text-align: left; color: #fff; font-family: 'Courier New', monospace; font-size: 0.85rem; }
+        .receipt-line { border-top: 1px dashed #444; margin: 10px 0; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; z-index: 100; }
+        .nav-item { text-align: center; color: #888; font-size: 0.75rem; border: none; background: none; }
     </style>
 </head>
 <body>
-    <div id="overlay" class="overlay"><div class="spinner"></div>Synchronizing secure data...</div>
+    <div id="google_translate_element"></div>
+
+    <!-- PIN Modal -->
+    <div id="pinOverlay" class="overlay">
+        <div class="modal-container">
+            <h3 style="color: white; margin-bottom: 10px;">Security Verification</h3>
+            <input type="password" id="pinInput" class="pin-input" maxlength="4" placeholder="****">
+            <br>
+            <button class="btn-confirm" onclick="verifyPin()">Unlock Card</button>
+            <button onclick="closeModals()" style="background:none; color:#ff4d4d; border:none; margin-top:10px;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div id="receiptOverlay" class="overlay">
+        <div id="loadingReceipt" style="display:none; text-align: center; color: var(--accent);">
+            <div class="spinner"></div>
+            <p>Fetching Transaction Manifest...</p>
+        </div>
+        <div class="modal-container" id="receiptContent" style="display:none;">
+            <h2 style="color: var(--accent); margin:0;">RECEIPT</h2>
+            <p style="font-size: 0.7rem; color: #888;">Vantage Peak Private Wealth</p>
+            <div class="receipt-line"></div>
+            <div class="receipt-body" id="receiptData">
+                <!-- Dynamic Content -->
+            </div>
+            <div class="receipt-line"></div>
+            <button class="btn-confirm" onclick="closeModals()">Close</button>
+        </div>
+    </div>
 
     <div class="header">
         <img src="profile.jpg" class="profile-img" onerror="this.src='https://ui-avatars.com'">
-        <div style="font-weight: 600;">hyun Jéssica</div>
-        <div class="bank-name">Vantage Peak Financial</div>
+        <div style="font-weight: 600; font-size: 1.2rem;">Hyun Jéssica</div>
+        <div class="bank-name">Vantage Peak Private Wealth</div>
     </div>
 
     <div class="content">
         <div class="balance-card">
-            <div class="label">Total Available Balance</div>
-            <div style="font-size: 1.8rem; font-weight: 800; margin-top: 5px;">$1,786,000.00</div>
+            <div class="label">Total Liquidity</div>
+            <div style="font-size: 2rem; font-weight: 800; margin-top: 5px; color: #fff;">$1,786,000.00</div>
         </div>
 
-        <div class="debit-card">
-            <div class="card-type">PRIVATE CLIENT</div>
+        <div class="debit-card" onclick="showPinModal()">
+            <div class="card-type">CENTURION RESERVE</div>
             <div class="chip"></div>
-            <div class="card-num">**** **** **** 9901</div>
+            <div class="card-num" id="cardNum">**** **** **** 9901</div>
+            <div class="cvv-display" id="cvvBox">CVV: ***</div>
             <div style="display: flex; justify-content: space-between;">
-                <div><div class="label">Holder</div><div class="val">HYUN JÉSSICA</div></div>
-                <div style="text-align: right;"><div class="label">Status</div><div class="val">ACTIVE</div></div>
+                <div><div class="label">Cardholder</div><div class="val">HYUN JÉSSICA</div></div>
+                <div style="text-align: right;"><div class="label">Exp</div><div class="val">12/30</div></div>
             </div>
         </div>
 
-        <h3 style="font-size: 1rem;">Recent Activity</h3>
-        <div class="card-white">
-            <div class="trans-row"><div class="trans-info"><b>Dividend Reinvestment</b><span>Apr 09, 2026</span></div><div class="amount-pos">+$12,450.00</div></div>
-            <div class="trans-row"><div class="trans-info"><b>Luxury Estate Mgmt</b><span>Apr 08, 2026</span></div><div class="amount-neg">-$4,200.00</div></div>
-            <div class="trans-row"><div class="trans-info"><b>Wire Transfer Inbound</b><span>Apr 05, 2026</span></div><div class="amount-pos">+$150,000.00</div></div>
-            <div class="trans-row"><div class="trans-info"><b>Private Jet Charter</b><span>Apr 02, 2026</span></div><div class="amount-neg">-$18,500.00</div></div>
-            <div class="trans-row"><div class="trans-info"><b>Global Equity Fund</b><span>Mar 28, 2026</span></div><div class="amount-neg">-$50,000.00</div></div>
-            <div class="trans-row"><div class="trans-info"><b>Boutique Concierge</b><span>Mar 25, 2026</span></div><div class="amount-neg">-$1,250.00</div></div>
-            <div class="trans-row" style="border:none;"><div class="trans-info"><b>Capital Gains Dist.</b><span>Mar 20, 2026</span></div><div class="amount-pos">+$8,900.00</div></div>
+        <h3 style="font-size: 1rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px;">Recent Activity</h3>
+        <div class="card-white" id="transList">
+            <div class="trans-row" onclick="openReceipt('David Sterling', '+$45,000.00', 'Apr 09, 2026', 'CREDIT')">
+                <div class="trans-info"><b>Transfer from David Sterling</b><span>Apr 09, 2026</span></div><div class="amount-pos">+$45,000.00</div>
+            </div>
+            <div class="trans-row" onclick="openReceipt('Sarah Jenkins (Estate Mgmt)', '-$4,200.00', 'Apr 08, 2026', 'DEBIT')">
+                <div class="trans-info"><b>Luxury Estate Mgmt</b><span>Apr 08, 2026</span></div><div class="amount-neg">-$4,200.00</div>
+            </div>
+            <div class="trans-row" onclick="openReceipt('Marcus Thorne', '-$12,800.00', 'Apr 07, 2026', 'DEBIT')">
+                <div class="trans-info"><b>Payment to Marcus Thorne</b><span>Apr 07, 2026</span></div><div class="amount-neg">-$12,800.00</div>
+            </div>
+            <div class="trans-row" onclick="openReceipt('Elena Rodriguez', '+$150,000.00', 'Apr 05, 2026', 'CREDIT')">
+                <div class="trans-info"><b>Wire: Elena Rodriguez</b><span>Apr 05, 2026</span></div><div class="amount-pos">+$150,000.00</div>
+            </div>
         </div>
     </div>
 
     <nav class="bottom-nav">
-        <button class="nav-item active" onclick="goTo('dashboard.html')"><span class="nav-icon">🏠</span>Home</button>
-        <button class="nav-item" onclick="goTo('transfer.html')"><span class="nav-icon">💸</span>Transfer</button>
-        <button class="nav-item" onclick="goTo('settings.html')"><span class="nav-icon">⚙️</span>Settings</button>
-        <button class="nav-item" onclick="location.href='index.html'" style="color:#ef4444;"><span class="nav-icon">⏻</span>Logout</button>
+        <button class="nav-item"><span style="display:block; font-size:1.4rem;">🌌</span>Vault</button>
+        <button class="nav-item"><span style="display:block; font-size:1.4rem;">💎</span>Wealth</button>
+        <button class="nav-item" onclick="location.reload()"><span style="display:block; font-size:1.4rem;">⏻</span>Reset</button>
     </nav>
 
     <script>
-        function goTo(url) {
-            document.getElementById('overlay').style.display = 'flex';
-            setTimeout(() => { window.location.href = url; }, 4000);
+        // PIN Logic
+        function showPinModal() { document.getElementById('pinOverlay').style.display = 'flex'; }
+        function closeModals() { 
+            document.getElementById('pinOverlay').style.display = 'none'; 
+            document.getElementById('receiptOverlay').style.display = 'none';
+        }
+        function verifyPin() {
+            if (document.getElementById('pinInput').value === "1590") {
+                document.getElementById('cardNum').innerText = "4412 8821 0093 9901";
+                document.getElementById('cvvBox').style.display = 'block';
+                document.getElementById('cvvBox').innerText = "CVV: 370";
+                closeModals();
+            } else { alert("Wrong PIN"); }
+        }
+
+        // Receipt Logic
+        function openReceipt(name, amount, date, type) {
+            const overlay = document.getElementById('receiptOverlay');
+            const loader = document.getElementById('loadingReceipt');
+            const content = document.getElementById('receiptContent');
+            const dataBox = document.getElementById('receiptData');
+
+            overlay.style.display = 'flex';
+            loader.style.display = 'block';
+            content.style.display = 'none';
+
+            setTimeout(() => {
+                loader.style.display = 'none';
+                content.style.display = 'block';
+                dataBox.innerHTML = `
+                    <p><b>REF:</b> VP-${Math.floor(Math.random()*900000)}</p>
+                    <p><b>DATE:</b> ${date}</p>
+                    <p><b>ENTITY:</b> ${name}</p>
+                    <p><b>TYPE:</b> ${type}</p>
+                    <p><b>STATUS:</b> SUCCESSFUL</p>
+                    <div class="receipt-line"></div>
+                    <p style="font-size:1.2rem; text-align:center;"><b>TOTAL: ${amount}</b></p>
+                `;
+            }, 2500); // 2.5 second delay
         }
     </script>
 </body>
 </html>
+
 
