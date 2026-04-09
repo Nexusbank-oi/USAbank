@@ -15,7 +15,14 @@
         .transfer-card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .form-group { margin-bottom: 20px; }
         label { display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; color: #64748b; text-transform: uppercase; }
-        input, select { width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-size: 1rem; background: #fdfdfd; }
+        input, select { width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-size: 1rem; background: #fdfdfd; transition: all 0.3s; }
+        
+        /* Validation & Converter Styles */
+        .error-field { border: 2px solid #ef4444 !important; background: #fff1f2 !important; }
+        .conversion-box { margin-top: 15px; padding: 15px; background: #f1f5f9; border-radius: 12px; border-left: 4px solid var(--accent); }
+        .conv-label { font-size: 0.7rem; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
+        .conv-value { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+
         .btn-primary { background: var(--primary); color: white; border: none; padding: 18px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 1rem; margin-top: 10px; cursor: pointer; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #e2e8f0; z-index: 100; }
         .nav-item { text-align: center; color: #94a3b8; text-decoration: none; font-size: 0.75rem; cursor: pointer; border: none; background: none; }
@@ -45,40 +52,43 @@
 
         <!-- LOCAL -->
         <div id="local-section" class="transfer-card">
-            <div class="form-group"><label>Bank</label><select id="l-bank"><option>JPMorgan Chase</option><option>Bank of America</option><option>Citigroup</option><option>Wells Fargo</option><option>Goldman Sachs</option><option>Morgan Stanley</option><option>U.S. Bancorp</option><option>PNC Financial Services</option><option>Truist Financial</option><option>Charles Schwab</option><option>TD Bank</option><option>Capital One</option><option>BNY Mellon</option><option>State Street</option><option>American Express</option></select></div>
-            <div class="form-group"><label>Account Number</label><input type="text" id="l-acc" placeholder="Recipient account"></div>
-            <div class="form-group"><label>Routing Number</label><input type="text" id="l-route" placeholder="9 Digits"></div>
-            <div class="form-group"><label>Amount ($)</label><input type="number" id="l-amt" placeholder="0.00"></div>
-            <button class="btn-primary" onclick="validateLocal()">Send Money</button>
+            <div class="form-group"><label>Bank</label><select id="l-bank"><option>JPMorgan Chase</option><option>Bank of America</option><option>Wells Fargo</option></select></div>
+            <div class="form-group"><label>Account Number</label><input type="text" id="l-acc" class="v-field" placeholder="Recipient account"></div>
+            <div class="form-group"><label>Routing Number</label><input type="text" id="l-route" class="v-field" placeholder="9 Digits"></div>
+            <div class="form-group"><label>Amount (USD)</label><input type="number" id="l-amt" class="v-field" placeholder="0.00"></div>
+            <button class="btn-primary" onclick="validateForm('local-section')">Send Money</button>
         </div>
 
         <!-- INTERNATIONAL -->
         <div id="international-section" class="transfer-card hidden">
-            <div class="form-group"><label>Full Name</label><input type="text" id="i-name" placeholder="Beneficiary name"></div>
-            <div class="form-group"><label>Recipient Bank</label><input type="text" id="i-bank" placeholder="Bank name"></div>
-            <div class="form-group"><label>Swift Code (Optional)</label><input type="text" id="i-swift" placeholder="SWIFT/BIC"></div>
-            <div class="form-group"><label>IBAN / Account</label><input type="text" id="i-iban" placeholder="International number"></div>
+            <div class="form-group"><label>Full Name</label><input type="text" id="i-name" class="v-field" placeholder="Beneficiary name"></div>
+            <div class="form-group"><label>Recipient Bank</label><input type="text" id="i-bank" class="v-field" placeholder="Bank name"></div>
+            <div class="form-group"><label>IBAN / Account</label><input type="text" id="i-iban" class="v-field" placeholder="International number"></div>
             <div style="display:flex; gap:10px;">
-                <div class="form-group" style="flex:2;"><label>Amount</label><input type="number" id="i-amt"></div>
-                <div class="form-group" style="flex:1.5;"><label>Currency</label><select id="i-curr"><option>PLN (Poland)</option><option>SGD (Singapore)</option><option>TWD (Taiwan)</option><option>USD</option><option>EUR</option><option>GBP</option><option>JPY</option><option>CAD</option><option>AUD</option><option>CHF</option><option>CNY</option><option>HKD</option><option>NZD</option><option>SEK</option><option>ZAR</option></select></div>
+                <div class="form-group" style="flex:2;"><label>Send Amount (USD)</label><input type="number" id="i-amt" class="v-field" placeholder="0.00" oninput="calculateExchange()"></div>
+                <div class="form-group" style="flex:1.5;"><label>Currency</label><select id="i-curr" onchange="calculateExchange()"><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="SGD">SGD</option><option value="JPY">JPY</option><option value="PLN">PLN</option></select></div>
             </div>
-            <button class="btn-primary" onclick="validateInternational()">Initiate Global Wire</button>
+            <div class="conversion-box">
+                <div class="conv-label">Recipient Will Receive</div>
+                <div class="conv-value" id="conv-display">0.00 EUR</div>
+            </div>
+            <button class="btn-primary" style="margin-top:20px;" onclick="validateForm('international-section')">Initiate Global Wire</button>
         </div>
 
         <!-- BILL PAY -->
         <div id="bills-section" class="transfer-card hidden">
-            <div class="form-group"><label>Payee Name</label><input type="text" id="b-payee" placeholder="e.g. AT&T"></div>
-            <div class="form-group"><label>Bill Account</label><input type="text" id="b-acc"></div>
-            <div class="form-group"><label>Amount ($)</label><input type="number" id="b-amt"></div>
-            <button class="btn-primary" onclick="validateBills()">Pay Bill</button>
+            <div class="form-group"><label>Payee Name</label><input type="text" id="b-payee" class="v-field" placeholder="e.g. AT&T"></div>
+            <div class="form-group"><label>Bill Account</label><input type="text" id="b-acc" class="v-field"></div>
+            <div class="form-group"><label>Amount ($)</label><input type="number" id="b-amt" class="v-field" placeholder="0.00"></div>
+            <button class="btn-primary" onclick="validateForm('bills-section')">Pay Bill</button>
         </div>
     </div>
 
     <nav class="bottom-nav">
-        <button class="nav-item" onclick="goTo('dashboard.html')"><span class="nav-icon">🏠</span>Home</button>
-        <button class="nav-item active" onclick="goTo('transfer.html')"><span class="nav-icon">💸</span>Transfer</button>
-        <button class="nav-item" onclick="goTo('settings.html')"><span class="nav-icon">⚙️</span>Settings</button>
-        <button class="nav-item" onclick="location.href='index.html'" style="color:#ef4444;"><span class="nav-icon">⏻</span>Logout</button>
+        <button class="nav-item" onclick="location.href='#'"><span class="nav-icon">🏠</span>Home</button>
+        <button class="nav-item active"><span class="nav-icon">💸</span>Transfer</button>
+        <button class="nav-item"><span class="nav-icon">⚙️</span>Settings</button>
+        <button class="nav-item" style="color:#ef4444;"><span class="nav-icon">⏻</span>Logout</button>
     </nav>
 
     <script>
@@ -89,36 +99,47 @@
             event.currentTarget.classList.add('active');
         }
 
-        function validateLocal() {
-            if(!document.getElementById('l-acc').value || !document.getElementById('l-route').value || !document.getElementById('l-amt').value) {
-                alert("Please fill all required fields to continue.");
-            } else { processAction('local'); }
+        function calculateExchange() {
+            const amount = document.getElementById('i-amt').value;
+            const currency = document.getElementById('i-curr').value;
+            const display = document.getElementById('conv-display');
+            
+            const rates = { "EUR": 0.92, "GBP": 0.79, "SGD": 1.34, "JPY": 151.6, "PLN": 3.98 };
+            
+            if (amount && amount > 0) {
+                const result = (amount * rates[currency]).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                display.innerText = `${result} ${currency}`;
+            } else {
+                display.innerText = `0.00 ${currency}`;
+            }
         }
 
-        function validateInternational() {
-            if(!document.getElementById('i-name').value || !document.getElementById('i-bank').value || !document.getElementById('i-iban').value || !document.getElementById('i-amt').value) {
-                alert("Please fill all required beneficiary details.");
-            } else { processAction('int'); }
-        }
+        function validateForm(sectionId) {
+            const section = document.getElementById(sectionId);
+            const fields = section.querySelectorAll('.v-field');
+            let isValid = true;
 
-        function validateBills() {
-            if(!document.getElementById('b-payee').value || !document.getElementById('b-acc').value || !document.getElementById('b-amt').value) {
-                alert("Please enter payee details and amount.");
-            } else { processAction('local'); }
-        }
-
-        function processAction(type) {
-            const o = document.getElementById('loading-overlay'); o.style.display = 'flex';
-            setTimeout(() => {
-                if(type === 'local') {
-                    o.style.display = 'none';
-                    alert("Transaction Error: You can't perform this right now. Please try again later.");
+            fields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('error-field');
+                    isValid = false;
                 } else {
-                    o.innerHTML = `<div class="modal"><h3 style="color:#e74c3c; margin-top:0;">Payment On Hold</h3><p style="font-size:0.9rem;">A mandatory <b>1.8% processing fee</b> must be paid from the <b>receiver country's</b> tax account.</p><p style="font-size:0.85rem; margin-top:15px;">Contact bank staff for clearance:</p><h2 style="background:#f1f5f9; padding:15px; border-radius:12px; font-size:1.1rem;">+1 (368) 207-0226</h2><p style="font-size:0.75rem; color:#64748b;">(Chat with support on WhatsApp)</p><button class="btn-primary" onclick="location.reload()">Close</button></div>`;
+                    field.classList.remove('error-field');
                 }
-            }, 4000);
+            });
+
+            if (!isValid) {
+                alert("Please fill in the highlighted fields to proceed.");
+                return;
+            }
+
+            const overlay = document.getElementById('loading-overlay');
+            overlay.style.display = 'flex';
+            setTimeout(() => {
+                alert("Transaction Processed Successfully.");
+                overlay.style.display = 'none';
+            }, 3000);
         }
-        function goTo(url) { document.getElementById('loading-overlay').style.display='flex'; setTimeout(()=>{window.location.href=url},4000); }
     </script>
 </body>
 </html>
