@@ -218,19 +218,13 @@
         }
 
         function validateLocal() {
-    let isValid = true;
+            let isValid = true;
+            document.querySelectorAll('#local-section .v-field').forEach(i => {
+                if(!i.value.trim()) { i.classList.add('error-field'); isValid = false; }
+                else { i.classList.remove('error-field'); }
+            });
+            if(isValid) { confirmTransfer(); }
 
-    document.querySelectorAll('#local-section .v-field').forEach(i => {
-        if(!i.value.trim()) {
-            i.classList.add('error-field');
-            isValid = false;
-        } else {
-            i.classList.remove('error-field');
-        }
-    });
-
-    if(isValid) {
-        alert("Service currently not available in your location.");
     }
     </script>
 </body>
